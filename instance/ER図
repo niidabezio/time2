@@ -1,0 +1,13 @@
+erDiagram
+    STAFF {
+        int id PK
+        string name
+    }
+    ATTENDANCE {
+        int id PK
+        int staff_id FK
+        date date
+        time check_in
+        time check_out
+    }
+    STAFF ||--o{ ATTENDANCE : "has"

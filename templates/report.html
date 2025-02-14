@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>月ごとの勤務集計</title>
+</head>
+<body>
+    <h1>月ごとの勤務集計</h1>
+    <table border="1">
+        <tr>
+            <th>名前</th>
+            <th>月</th>
+            <th>合計勤務時間</th>
+        </tr>
+        {% for name, month, total_hours in monthly_data %}
+        <tr>
+            <td>{{ name }}</td>
+            <td>{{ month }}</td>
+            <td>{{ "%.2f"|format(total_hours) }} 時間</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">戻る</a>
+</body>
+</html>

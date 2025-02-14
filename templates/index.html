@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出勤・退勤管理</title>
+</head>
+<body>
+    <h1>出勤・退勤打刻</h1>
+    <form method="POST">
+        <label>スタッフ: </label>
+        <select name="staff_id">
+            {% for staff in staff_list %}
+                <option value="{{ staff.id }}">{{ staff.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="check_in">出勤</button>
+        <button type="submit" name="check_out">退勤</button>
+    </form>
+
+    <h2>記録</h2>
+    <table border="1">
+        <tr>
+            <th>名前</th>
+            <th>日付</th>
+            <th>出勤時間</th>
+            <th>退勤時間</th>
+        </tr>
+        {% for record, staff in records %}
+        <tr>
+            <td>{{ staff.name }}</td>
+            <td>{{ record.date }}</td>
+            <td>{{ record.check_in }}</td>
+            <td>{{ record.check_out if record.check_out else "未退勤" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="{{ url_for('report') }}">月ごとの集計を見る</a>
+</body>
+</html>
