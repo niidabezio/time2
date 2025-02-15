@@ -25,6 +25,7 @@
             <th>日付</th>
             <th>出勤時間</th>
             <th>退勤時間</th>
+            <th>修正</th>
         </tr>
         {% for record, staff in records %}
         <tr>
@@ -32,6 +33,7 @@
             <td>{{ record.date }}</td>
             <td>{{ record.check_in }}</td>
             <td>{{ record.check_out if record.check_out else "未退勤" }}</td>
+            <td><a href="{{ url_for('edit', attendance_id=record.id) }}">修正</a></td>
         </tr>
         {% endfor %}
     </table>

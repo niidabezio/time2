@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ staff.name }}の履歴</title>
+</head>
+<body>
+    <h1>{{ staff.name }}の出勤履歴</h1>
+    <table border="1">
+        <tr>
+            <th>日付</th>
+            <th>出勤時間</th>
+            <th>退勤時間</th>
+        </tr>
+        {% for record in history_records %}
+        <tr>
+            <td>{{ record.date }}</td>
+            <td>{{ record.check_in }}</td>
+            <td>{{ record.check_out if record.check_out else "未退勤" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="{{ url_for('index') }}">戻る</a>
+</body>
+</html>

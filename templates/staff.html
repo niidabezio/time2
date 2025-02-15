@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スタッフ管理</title>
+</head>
+<body>
+    <h1>スタッフ管理</h1>
+    
+    <h2>スタッフの登録</h2>
+    <form method="POST">
+        <input type="text" name="staff_name" required>
+        <button type="submit" name="add_staff">追加</button>
+    </form>
+
+    <h2>スタッフの削除</h2>
+    <form method="POST">
+        <select name="staff_id">
+            {% for staff in staff_list %}
+                <option value="{{ staff.id }}">{{ staff.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="delete_staff">削除</button>
+    </form>
+
+    <a href="{{ url_for('index') }}">戻る</a>
+</body>
+</html>

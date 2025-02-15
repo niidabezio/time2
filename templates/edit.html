@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打刻の修正</title>
+</head>
+<body>
+    <h1>打刻の修正</h1>
+    <form method="POST">
+        <label>出勤時間: </label>
+        <input type="time" name="check_in" value="{{ record.check_in }}" required>
+        <br>
+        <label>退勤時間: </label>
+        <input type="time" name="check_out" value="{{ record.check_out }}" required>
+        <br>
+        <button type="submit">保存</button>
+    </form>
+    <a href="{{ url_for('index') }}">戻る</a>
+</body>
+</html>
