@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スタッフ名の編集</title>
+</head>
+<body>
+    <h1>スタッフ名の編集</h1>
+
+    <form method="POST">
+        <label>名前：</label>
+        <input type="text" name="name" value="{{ staff.name }}" required>
+        <button type="submit">更新</button>
+    </form>
+
+    <a href="{{ url_for('staff') }}">戻る</a>
+</body>
+</html>

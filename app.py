@@ -1,22 +1,22 @@
 import os
 import csv
 import pandas as pd
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = "super_secret_key"  # セッション管理用の秘密鍵
 
 # ✅ データベースのパスを設定
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))  
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 DB_PATH = os.path.join(BASE_DIR, "instance", "database.db")
-
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-os.makedirs(os.path.join(BASE_DIR, "instance"), exist_ok=True)  # `instance/` フォルダを自動作成
+os.makedirs(os.path.join(BASE_DIR, "instance"), exist_ok=True)  # instance/ フォルダを自動作成
 
 # ✅ スタッフ情報のテーブル
 class Staff(db.Model):
@@ -39,7 +39,60 @@ def init_db():
 
 init_db()
 
-# ✅ ホーム画面（出勤・退勤の打刻）
+# ✅ 管理者ログインページ
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        if username == "niida" and password == "admin":
+            session["admin"] = True
+            flash("ログイン成功", "success")
+            return redirect(url_for("staff_management"))
+        else:
+            flash("ログイン失敗", "danger")
+    return render_template("login.html")
+
+# ✅ ログアウト
+@app.route("/logout")
+def logout():
+    session.pop("admin", None)
+    flash("ログアウトしました", "success")
+    return redirect(url_for("login"))
+
+# ✅ スタッフ管理画面（管理者のみアクセス可能）
+@app.route("/staff", methods=["GET", "POST"])
+def staff_management():
+    if "admin" not in session:
+        flash("ログインしてください", "danger")
+        return redirect(url_for("login"))
+
+    staff_list = Staff.query.all()
+    if request.method == "POST":
+        name = request.form["name"]
+        if name:
+            new_staff = Staff(name=name)
+            db.session.add(new_staff)
+            db.session.commit()
+            flash("スタッフを追加しました", "success")
+            return redirect(url_for("staff_management"))
+    return render_template("staff.html", staff_list=staff_list)
+
+# ✅ スタッフ削除
+@app.route("/staff/delete/<int:staff_id>")
+def delete_staff(staff_id):
+    if "admin" not in session:
+        flash("ログインしてください", "danger")
+        return redirect(url_for("login"))
+    
+    staff = Staff.query.get(staff_id)
+    if staff:
+        db.session.delete(staff)
+        db.session.commit()
+        flash("スタッフを削除しました", "success")
+    return redirect(url_for("staff_management"))
+
+## ✅ ホーム画面（出勤・退勤の打刻）
 @app.route("/", methods=["GET", "POST"])
 def index():
     staff_list = Staff.query.all()
@@ -79,7 +132,7 @@ def edit(attendance_id):
 
     return render_template("edit.html", record=record)
 
-# ✅ 月ごとの勤務時間の集計
+ # ✅ 月ごとの勤務時間の集計
 @app.route("/report")
 def report():
     monthly_data = db.session.query(
@@ -117,6 +170,14 @@ def export_excel():
     df.to_excel(file_path, index=False)
 
     return send_file(file_path, as_attachment=True)
+
+# ✅ **ログイン制御の確認**
+@app.before_request
+def require_login():
+    restricted_routes = ["staff_management", "delete_staff"]
+    if request.endpoint in restricted_routes and "admin" not in session:
+        flash("ログインが必要です", "danger")
+        return redirect(url_for("login"))
 
 # ✅ Flaskアプリの起動（スマホからもアクセス可能にする）
 if __name__ == "__main__":
