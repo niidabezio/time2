@@ -4,46 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>出勤・退勤管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 </head>
 <body>
-    <h1>出勤・退勤打刻</h1>
-    <form method="POST">
-        <label>スタッフ: </label>
-        <select name="staff_id">
-            {% for staff in staff_list %}
-                <option value="{{ staff.id }}">{{ staff.name }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit" name="check_in">出勤</button>
-        <button type="submit" name="check_out">退勤</button>
-    </form>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">出勤退勤打刻</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">ログイン</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">集計</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">スタッフ簿</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled">その他</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
 
-    <h2>記録</h2>
-    <table border="1">
-        <tr>
-            <th>名前</th>
-            <th>日付</th>
-            <th>出勤時間</th>
-            <th>退勤時間</th>
-            <th>修正</th>
-        </tr>
-        {% for record, staff in records %}
-        <tr>
-            <td>{{ staff.name }}</td>
-            <td>{{ record.date }}</td>
-            <td>{{ record.check_in }}</td>
-            <td>{{ record.check_out if record.check_out else "未退勤" }}</td>
-            <td><a href="{{ url_for('edit', attendance_id=record.id) }}">修正</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="container mt-4">
+        <h1>出勤・退勤打刻</h1>
 
-    <a href="{{ url_for('report') }}">月ごとの集計を見る</a>
+        <form method="POST" class="mb-4">
+            <label class="form-label">スタッフ: </label>
+            <select name="staff_id" class="form-select w-25 d-inline">
+                {% for staff in staff_list %}
+                    <option value="{{ staff.id }}">{{ staff.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="check_in" class="btn btn-success">出勤</button>
+            <button type="submit" name="check_out" class="btn btn-danger">退勤</button>
+        </form>
 
-    <a href="{{ url_for('staff_management') }}">スタッフ管理</a>
+        <h2>記録</h2>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center">名前</th>
+                    <th class="text-center">日付</th>
+                    <th class="text-center">出勤時間</th>
+                    <th class="text-center">退勤時間</th>
+                    <th class="text-center">修正</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record, staff in records %}
+                <tr>
+                    <td class="text-center">{{ staff.name }}</td>
+                    <td class="text-center">{{ record.date }}</td>
+                    <td class="text-center">{{ record.check_in.strftime('%H:%M') }}</td>
+                    <td class="text-center">
+                        {{ record.check_out.strftime('%H:%M') if record.check_out else "未退勤" }}
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ url_for('edit', attendance_id=record.id) }}" class="btn btn-warning btn-sm">修正</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-        <button>スタッフ管理</button>
-    </a>
-    
+        <a class="btn btn-primary" href="{{ url_for('report') }}">月ごとの集計を見る</a>
+        <a class="btn btn-secondary" href="{{ url_for('staff_management') }}">スタッフ管理</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
 </body>
 </html>
